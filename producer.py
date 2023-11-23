@@ -5,8 +5,8 @@ import cv2
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-producer = KafkaProducer(bootstrap_servers='localhost:9092')
-topic = 'my-topic'
+producer = KafkaProducer(bootstrap_servers=('localhost:9092'))
+topic = 'my-topic-2'
 
 
 def emit_video(path_to_video):
@@ -31,7 +31,7 @@ def emit_video(path_to_video):
 
         print('.', end='', flush=True)
 
-emit_video(0)
+emit_video('test.mp4')
 # zero is for open webcam or usb webcam
 # can play a video just add video file in emit_video function
 # rtsp camera stream add rtsp feed in emit_video function
