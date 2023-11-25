@@ -1,23 +1,24 @@
-from flask import Flask, Response
 from kafka import KafkaConsumer
+import numpy as np
+import cv2
+from ultralytics import YOLO
 
-consumer = KafkaConsumer('my-topic', bootstrap_servers='localhost:9092')
+consumer = KafkaConsumer('video-stream', bootstrap_servers='localhost:9092')
+def get_video():
+  for message in consumer:
+    frame = np.frombuffer(message.value, dtype='uint8')
 
-app = Flask(__name__)
+    image = cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
+    model = YOLO('yolov8n.pt')
+    # model.to('cuda')
+    results = model.track(image, persist=True)
+    annotated_frame = results[0].plot()
 
-def kafkastream():
-    for message in consumer:
-        type(message.value)
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + message.value + b'\r\n\r\n')
-
-
-@app.route('/')
-def index():
-    return Response(kafkastream(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-if __name__ == '__main__':
-    app.run(port=8080)
+    yield annotated_frame
+for value in get_video():
+  cv2.imshow('frame', value)
+     
+  if cv2.waitKey(1) == ord('q'):
+    break
+cv2.destroyAllWindows()
