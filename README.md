@@ -12,7 +12,7 @@ docker compose up -d
 ```
 
 ### Conda Environment
-1. Create conda environment using Python 3.11
+1. Create conda environment with Python 3.11
     ```
     conda create -n video-stream python=3.11
     ```
