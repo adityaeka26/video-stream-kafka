@@ -8,13 +8,17 @@ import numpy as np
 from kafka import KafkaConsumer
 from ultralytics import YOLO
 
-consumer = KafkaConsumer('video-stream', bootstrap_servers='localhost:9092')
+yolo_enabled = True
+kakfa_topic = 'video-stream'
+kafka_host = 'localhost:9092'
+
+kafka_consumer = KafkaConsumer(kakfa_topic, bootstrap_servers=kafka_host)
 average_latency = 0
 frame_count = 0
 total_latency = 0
 
 def get_video():
-  for message in consumer:
+  for message in kafka_consumer:
     data = json.loads(message.value)
 
     global total_latency
@@ -38,15 +42,19 @@ def get_video():
     frame = np.frombuffer(image_bytes, dtype='uint8')
     image = cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
-    # model = YOLO('yolov8n.pt')
-    # model.to('cuda')
-    # results = model.track(image, persist=True)
-    # annotated_frame = results[0].plot()
+    annotated_frame = None
+    if yolo_enabled:
+      model = YOLO('yolov8n.pt')
+      # model.to('cuda')
+      results = model.track(image, persist=True)
+      annotated_frame = results[0].plot()
 
     print('=============================================')
 
-    # yield annotated_frame
-    yield image
+    if yolo_enabled:
+      yield annotated_frame
+    else:
+      yield image
 
 for value in get_video():
   cv2.imshow('frame', value)

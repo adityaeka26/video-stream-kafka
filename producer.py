@@ -6,8 +6,11 @@ import base64
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-producer = KafkaProducer(bootstrap_servers=('localhost:9092'))
-topic = 'video-stream'
+video_path = 'data/test.mp4'
+kafka_topic = 'video-stream'
+kafka_host = 'localhost:9092'
+
+kafka_producer = KafkaProducer(bootstrap_servers=kafka_host)
 
 def frame_to_json(frame, timestamp):
     # Encode frame to JPEG
@@ -38,12 +41,12 @@ def emit_video(path_to_video):
     if not success:
       break
 
-    timestamp = time.time()  # Replace with your method of getting the timestamp
+    timestamp = time.time()
 
     # Convert frame to JSON
     json_str = frame_to_json(frame, timestamp)
 
-    future = producer.send(topic, json_str)
+    future = kafka_producer.send(kafka_topic, json_str)
     try:
       future.get(timeout=10)
     except KafkaError as e:
@@ -53,5 +56,4 @@ def emit_video(path_to_video):
     print('.', end='', flush=True)
 
 # emit_video(0)
-emit_video('data/test.mp4')
-# emit_video(0)
+emit_video(video_path)
