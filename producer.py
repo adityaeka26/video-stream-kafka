@@ -34,6 +34,9 @@ def emit_video(path_to_video):
   print('start')
   video = cv2.VideoCapture(path_to_video)
 
+  fps = video.get(cv2.CAP_PROP_FPS)
+  delay = 1.0 / fps
+
   while video.isOpened():
     timestamp = time.time()
 
@@ -54,6 +57,8 @@ def emit_video(path_to_video):
       break
 
     print('.', end='', flush=True)
+
+    time.sleep(delay)
 
 # emit_video(0)
 emit_video(video_path)
