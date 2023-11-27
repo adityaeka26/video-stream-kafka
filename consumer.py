@@ -26,17 +26,10 @@ def get_video():
     global frame_count
     global average_latency
     
-    latency = (time.time() - data['timestamp']) * 1000
-    total_latency += latency
-    frame_count += 1
-    average_latency = total_latency / frame_count
-
-    print()
-    print('=============================================')
-    print(f'Latency: {latency} ms')
-    print(f'Total latency: {total_latency} ms')
-    print(f'Frame count: {frame_count}')
-    print(f'Average latency: {average_latency} ms')
+    # latency = (time.time() - data['timestamp']) * 1000
+    # total_latency += latency
+    # frame_count += 1
+    # average_latency = total_latency / frame_count
 
     image_bytes = base64.b64decode(data['image'])
 
@@ -51,7 +44,15 @@ def get_video():
       results = model.track(image, persist=True)
       annotated_frame = results[0].plot()
 
-    print('=============================================')
+    latency = (time.time() - data['timestamp']) * 1000
+    total_latency += latency
+    frame_count += 1
+    average_latency = total_latency / frame_count
+
+    print(f'Latency: {latency} ms')
+    print(f'Total latency: {total_latency} ms')
+    print(f'Frame count: {frame_count}')
+    print(f'Average latency: {average_latency} ms')
 
     if yolo_enabled:
       yield annotated_frame
