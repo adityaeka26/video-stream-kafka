@@ -1,5 +1,4 @@
 import time
-import sys
 import cv2
 import json
 import base64
