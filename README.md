@@ -4,6 +4,11 @@
 - Docker
 - Anaconda / Miniconda
 
+## Python Package Requirements
+- kafka-python 2.0.2
+- opencv-python 4.8.0.74
+- ultralytics 8.0.217
+
 ## How to run
 
 ### Kafka
