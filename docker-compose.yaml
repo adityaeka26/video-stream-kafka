@@ -1,7 +1,7 @@
 version: '3'
 services:
   kafka1:
-    image: confluentinc/cp-kafka
+    image: confluentinc/cp-kafka:7.4.3
     container_name: video_stream_kafka1
     hostname: kafka1
     ports:
