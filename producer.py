@@ -6,29 +6,25 @@ import base64
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-video_path = 'data/test.mp4'
+video_path = 'data/mot1609.webm'
 kafka_topic = 'video-stream'
 kafka_host = 'localhost:9092'
 
 kafka_producer = KafkaProducer(bootstrap_servers=kafka_host)
 
 def frame_to_json(frame, timestamp):
-    # Encode frame to JPEG
-    ret, jpeg = cv2.imencode('.jpeg', frame)
+  _, jpeg = cv2.imencode('.jpeg', frame)
 
-    # Convert JPEG bytes to base64 string
-    image_str = base64.b64encode(jpeg.tobytes()).decode('utf-8')
+  image_str = base64.b64encode(jpeg.tobytes()).decode('utf-8')
 
-    # Create data dictionary
-    data = {
-      'image': image_str,
-      'timestamp': timestamp,
-    }
+  data = {
+    'image': image_str,
+    'timestamp': timestamp,
+  }
 
-    # Convert data dictionary to JSON string
-    json_str = json.dumps(data).encode('utf-8')
+  json_str = json.dumps(data).encode('utf-8')
 
-    return json_str
+  return json_str
 
 def emit_video(path_to_video):
   print('start')
@@ -36,6 +32,8 @@ def emit_video(path_to_video):
 
   fps = video.get(cv2.CAP_PROP_FPS)
   delay = 1.0 / fps
+  
+  time_start = time.time()
 
   while video.isOpened():
     timestamp = time.time()
@@ -46,7 +44,6 @@ def emit_video(path_to_video):
 
     timestamp = time.time()
 
-    # Convert frame to JSON
     json_str = frame_to_json(frame, timestamp)
 
     future = kafka_producer.send(kafka_topic, json_str)
@@ -56,9 +53,11 @@ def emit_video(path_to_video):
       print(e)
       break
 
-    print('.', end='', flush=True)
+    # print('.', end='', flush=True)
 
-    time.sleep(delay)
+    if time.time() - timestamp < delay:
+      time.sleep(delay - (time.time() - timestamp))
 
-# emit_video(0)
+    print(time.time() - time_start, flush=True)
+
 emit_video(video_path)

@@ -22,15 +22,6 @@ def get_video():
   for message in kafka_consumer:
     data = json.loads(message.value)
 
-    global total_latency
-    global frame_count
-    global average_latency
-    
-    # latency = (time.time() - data['timestamp']) * 1000
-    # total_latency += latency
-    # frame_count += 1
-    # average_latency = total_latency / frame_count
-
     image_bytes = base64.b64decode(data['image'])
 
     frame = np.frombuffer(image_bytes, dtype='uint8')
@@ -43,6 +34,10 @@ def get_video():
         model.to('cuda')
       results = model.track(image, persist=True)
       annotated_frame = results[0].plot()
+
+    global total_latency
+    global frame_count
+    global average_latency
 
     latency = (time.time() - data['timestamp']) * 1000
     total_latency += latency

@@ -1,4 +1,5 @@
 # Video Stream Kafka
+Simple Video Streaming and Processing with Python and Kafka.
 
 ## Requirements
 - Docker
