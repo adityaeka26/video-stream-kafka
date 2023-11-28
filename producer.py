@@ -6,7 +6,7 @@ import base64
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-video_path = 'data/test.mp4'
+video_path = 'data/mot1609.webm'
 kafka_topic = 'video-stream'
 kafka_host = 'localhost:9092'
 
@@ -32,6 +32,8 @@ def emit_video(path_to_video):
 
   fps = video.get(cv2.CAP_PROP_FPS)
   delay = 1.0 / fps
+  
+  time_start = time.time()
 
   while video.isOpened():
     timestamp = time.time()
@@ -51,8 +53,11 @@ def emit_video(path_to_video):
       print(e)
       break
 
-    print('.', end='', flush=True)
+    # print('.', end='', flush=True)
 
-    time.sleep(delay)
+    if time.time() - timestamp < delay:
+      time.sleep(delay - (time.time() - timestamp))
+
+    print(time.time() - time_start, flush=True)
 
 emit_video(video_path)
