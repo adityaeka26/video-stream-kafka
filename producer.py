@@ -30,34 +30,40 @@ def emit_video(path_to_video):
   print('start')
   video = cv2.VideoCapture(path_to_video)
 
-  fps = video.get(cv2.CAP_PROP_FPS)
-  delay = 1.0 / fps
+  original_fps = video.get(cv2.CAP_PROP_FPS)
+  new_fps = 15
+  delay = 1.0 / original_fps
+
+  frame_skip_rate = int(original_fps / new_fps)
+  frame_counter = 0
   
   time_start = time.time()
 
   while video.isOpened():
-    timestamp = time.time()
+    time_frame_start = time.time()
 
     success, frame = video.read()
     if not success:
       break
 
-    timestamp = time.time()
+    if frame_counter % frame_skip_rate == 0:
+      json_str = frame_to_json(frame, time_frame_start)
 
-    json_str = frame_to_json(frame, timestamp)
-
-    future = kafka_producer.send(kafka_topic, json_str)
-    try:
-      future.get(timeout=10)
-    except KafkaError as e:
-      print(e)
-      break
+      future = kafka_producer.send(kafka_topic, json_str)
+      try:
+        future.get(timeout=10)
+      except KafkaError as e:
+        print(e)
+        break
 
     # print('.', end='', flush=True)
 
-    if time.time() - timestamp < delay:
-      time.sleep(delay - (time.time() - timestamp))
+    frame_counter += 1
 
-    print(time.time() - time_start, flush=True)
+    current_time = time.time()
+    if current_time - time_frame_start < delay:
+      time.sleep(delay - (current_time - time_frame_start))
+
+    print(current_time - time_start, flush=True)
 
 emit_video(video_path)
