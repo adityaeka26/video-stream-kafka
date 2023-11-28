@@ -6,7 +6,7 @@ import base64
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-video_path = 'data/mot1609.webm'
+video_path = 'data/pklot.mp4'
 kafka_topic = 'video-stream'
 kafka_host = 'localhost:9092'
 

@@ -9,7 +9,8 @@ from kafka import KafkaConsumer
 from ultralytics import YOLO
 
 yolo_enabled = True
-cuda_enabled = True
+yolo_model_path = 'pklot.pt'
+cuda_enabled = False
 kakfa_topic = 'video-stream'
 kafka_host = 'localhost:9092'
 
@@ -29,7 +30,7 @@ def get_video():
 
     annotated_frame = None
     if yolo_enabled:
-      model = YOLO('yolov8n.pt')
+      model = YOLO(yolo_model_path)
       if cuda_enabled:
         model.to('cuda')
       results = model.track(image, persist=True)
