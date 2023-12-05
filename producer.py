@@ -6,7 +6,8 @@ import base64
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-video_path = 'data/pklot.mp4'
+video_path = 'data/mot1609.webm'
+video_fps = 5
 kafka_topic = 'video-stream'
 kafka_host = 'localhost:9092'
 
@@ -31,7 +32,7 @@ def emit_video(path_to_video):
   video = cv2.VideoCapture(path_to_video)
 
   original_fps = video.get(cv2.CAP_PROP_FPS)
-  new_fps = 3
+  new_fps = video_fps
   delay = 1.0 / original_fps
 
   frame_skip_rate = int(original_fps / new_fps)

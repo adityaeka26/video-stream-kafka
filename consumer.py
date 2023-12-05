@@ -9,7 +9,7 @@ from kafka import KafkaConsumer
 from ultralytics import YOLO
 
 yolo_enabled = True
-yolo_model_path = 'pklot.pt'
+yolo_model_path = 'yolov8n.pt'
 cuda_enabled = False
 kakfa_topic = 'video-stream'
 kafka_host = 'localhost:9092'
@@ -33,7 +33,7 @@ def get_video():
       model = YOLO(yolo_model_path)
       if cuda_enabled:
         model.to('cuda')
-      results = model.track(image, persist=True)
+      results = model(image)
       annotated_frame = results[0].plot()
 
     global total_latency
